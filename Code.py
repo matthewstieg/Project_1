@@ -112,6 +112,9 @@ census_2011 = census_2011[["State", "Population","Bachelors Rate", "HS Diploma R
 # Merge 2 dataframes
 census_merged = pd.merge(census_2011, census_2017, how="inner",on="State",suffixes=("_2011", "_2017"))
 
+# Remove Puerto Rico
+census_merged = census_merged[census_merged.State != "Puerto Rico"]
+
 # Reorder Columns for Readability
 census_merged = census_merged[["State", "Population_2011", "Population_2017", "Bachelors Rate_2011", "Bachelors Rate_2017","Unemployment Rate_2011", "Unemployment Rate_2017"]]
 
@@ -132,4 +135,4 @@ census_merged["Unemployment Score"]=census_merged["Unemployment Change"].rank(as
 # Reorder Columns for Readability
 census_merged=census_merged[["State","Population Change", "Population Score", "Education Change","Education Score", "Unemployment Change", "Unemployment Score"]]
 census_merged["Composite Score"]=census_merged["Population Score"]+census_merged["Education Score"]+census_merged["Unemployment Score"]
-print(census_merged)
+census_merged
