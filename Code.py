@@ -196,6 +196,76 @@ for feature in states_geojson['features']:
 fig=gmaps.figure()
 unemployment_layer = gmaps.geojson_layer(states_geojson,fill_color=colors,stroke_color=colors,fill_opacity=0.8)
 fig.add_layer(unemployment_layer)
-# fig
+fig
 
-print("complete")
+censusdict_edu = census_merged[["State", "Education Change"]]
+censusdict_edu.set_index("State", inplace=True)
+censusdict_edu2 = censusdict_edu.to_dict()
+
+# Scale the values
+# Note: When negative values are better, use the inverse function for min/max
+min_education = min(census_merged["Education Change"])
+max_education = max(census_merged["Education Change"])
+education_range = max_education - min_education
+
+# Create a function to transform the values into a color
+def calculate_education(education):
+    normalized_education = (education - min_education)/education_range
+    mpl_color = coolwarm(normalized_education)
+    gmaps_color = to_hex(mpl_color, keep_alpha=False)
+    
+    return gmaps_color
+
+# Loop through each state to build an array of colors
+education_colors = []
+for feature in states_geojson['features']:
+    state_name = feature["properties"]["NAME"]
+    try:
+        education = censusdict_edu2["Education Change"][state_name]
+        color = calculate_education(education)
+    except (KeyError):
+        color = (0,0,0,0.3)
+    education_colors.append(color)
+
+
+# Build map
+fig=gmaps.figure()
+education_layer = gmaps.geojson_layer(states_geojson,fill_color=education_colors,stroke_color=education_colors,fill_opacity=0.8)
+fig.add_layer(education_layer)
+fig
+
+censusdict_comp = census_merged[["State", "Composite Score"]]
+censusdict_comp.set_index("State", inplace=True)
+censusdict_comp2 = censusdict_comp.to_dict()
+
+# Scale the values
+# Note: When negative values are better, use the inverse function for min/max
+min_comp = min(census_merged["Composite Score"])
+max_comp = max(census_merged["Composite Score"])
+comp_range = max_comp - min_comp
+
+# Create a function to transform the values into a color
+def calculate_composite(composite):
+    normalized_comp = (composite - min_comp)/comp_range
+    mpl_color = coolwarm(normalized_comp)
+    gmaps_color = to_hex(mpl_color, keep_alpha=False)
+    
+    return gmaps_color
+
+# Loop through each state to build an array of colors
+comp_colors = []
+for feature in states_geojson['features']:
+    state_name = feature["properties"]["NAME"]
+    try:
+        composite = censusdict_comp2["Composite Score"][state_name]
+        color = calculate_composite(composite)
+    except (KeyError):
+        color = (0,0,0,0.3)
+    comp_colors.append(color)
+
+
+# Build map
+fig=gmaps.figure()
+comp_layer = gmaps.geojson_layer(states_geojson,fill_color=comp_colors,stroke_color=comp_colors,fill_opacity=0.8)
+fig.add_layer(comp_layer)
+fig
