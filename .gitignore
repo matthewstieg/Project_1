@@ -103,5 +103,11 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-*config*
+.gitignore
+
+config.py
+api.ipynb
 DataFrame.ipynb
+DataFramestieg.ipynb
+HousingData.ipynb
+Code.py
